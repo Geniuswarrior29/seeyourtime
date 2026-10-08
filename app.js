@@ -197,7 +197,17 @@ async function fetchAllData() {
         try {
             const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getData&t=${Date.now()}`);
             const data = await res.json();
+            
             studySessions = data.sessions || [];
+            // Google Sheets returns dates as ISO strings. Normalize to YYYY-MM-DD
+            studySessions.forEach(s => {
+                if (s.date && s.date.includes('T')) {
+                    const d = new Date(s.date);
+                    s.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                }
+                s.duration_minutes = parseInt(s.duration_minutes, 10) || 0;
+            });
+            
             messages = data.messages || [];
         } catch (e) {
             console.error("API Error", e);
