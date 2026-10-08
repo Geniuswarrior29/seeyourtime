@@ -114,6 +114,17 @@ function showToast(message, emoji = '🔔') {
     }, 4000);
 }
 
+function showGlobalLoader(show) {
+    const loader = document.getElementById('global-loader');
+    if (show) {
+        loader.classList.remove('hidden');
+        loader.classList.add('active'); // Re-uses modal-overlay styles
+    } else {
+        loader.classList.add('hidden');
+        loader.classList.remove('active');
+    }
+}
+
 // --- AUTHENTICATION ---
 function handleLogin(e) {
     e.preventDefault();
@@ -184,7 +195,7 @@ async function fetchAllData() {
     } else {
         // Fetch from API
         try {
-            const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getData`);
+            const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getData&t=${Date.now()}`);
             const data = await res.json();
             studySessions = data.sessions || [];
             messages = data.messages || [];
@@ -196,49 +207,65 @@ async function fetchAllData() {
 }
 
 async function saveSessionToDB(session) {
+    // Optimistic UI Update for speed
+    const index = studySessions.findIndex(s => s.id === session.id);
+    if (index > -1) {
+        studySessions[index] = session;
+    } else {
+        studySessions.push(session);
+    }
+    updateDashboardUI();
+
     if (USE_MOCK_DB) {
-        const index = studySessions.findIndex(s => s.id === session.id);
-        if (index > -1) {
-            studySessions[index] = session; // Edit
-        } else {
-            studySessions.push(session); // Add
-        }
         localStorage.setItem('studyBattle_sessions', JSON.stringify(studySessions));
     } else {
-        // API Call
-        await fetch(`${GOOGLE_SHEET_API_URL}?action=addSession`, {
-            method: 'POST',
-            body: JSON.stringify(session)
-        });
-        await fetchAllData();
+        showGlobalLoader(true);
+        try {
+            await fetch(`${GOOGLE_SHEET_API_URL}?action=addSession`, {
+                method: 'POST',
+                body: JSON.stringify(session)
+            });
+            await fetchAllData();
+        } catch(e) { console.error(e); }
+        showGlobalLoader(false);
     }
 }
 
 async function deleteSessionFromDB(id) {
+    studySessions = studySessions.filter(s => s.id !== id);
+    updateDashboardUI();
+
     if (USE_MOCK_DB) {
-        studySessions = studySessions.filter(s => s.id !== id);
         localStorage.setItem('studyBattle_sessions', JSON.stringify(studySessions));
     } else {
-        // API Call
-        await fetch(`${GOOGLE_SHEET_API_URL}?action=deleteSession`, {
-            method: 'POST',
-            body: JSON.stringify({id})
-        });
-        await fetchAllData();
+        showGlobalLoader(true);
+        try {
+            await fetch(`${GOOGLE_SHEET_API_URL}?action=deleteSession`, {
+                method: 'POST',
+                body: JSON.stringify({id})
+            });
+            await fetchAllData();
+        } catch(e) { console.error(e); }
+        showGlobalLoader(false);
     }
 }
 
 async function saveMessageToDB(msg) {
+    messages.push(msg);
+    renderChat();
+
     if (USE_MOCK_DB) {
-        messages.push(msg);
         localStorage.setItem('studyBattle_messages', JSON.stringify(messages));
     } else {
-        // API Call
-        await fetch(`${GOOGLE_SHEET_API_URL}?action=addMessage`, {
-            method: 'POST',
-            body: JSON.stringify(msg)
-        });
-        await fetchAllData();
+        showGlobalLoader(true);
+        try {
+            await fetch(`${GOOGLE_SHEET_API_URL}?action=addMessage`, {
+                method: 'POST',
+                body: JSON.stringify(msg)
+            });
+            await fetchAllData();
+        } catch(e) { console.error(e); }
+        showGlobalLoader(false);
     }
 }
 
