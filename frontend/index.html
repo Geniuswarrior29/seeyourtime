@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Battle | Dev × Arpita</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app-container">
+        
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen" class="screen active">
+            <div class="login-bg-animations">
+                <span class="floating-emoji e1">📚</span>
+                <span class="floating-emoji e2">⏱️</span>
+                <span class="floating-emoji e3">🎯</span>
+                <span class="floating-emoji e4">🔥</span>
+                <span class="floating-emoji e5">⭐</span>
+            </div>
+            
+            <div class="login-card glass-card">
+                <div class="login-header">
+                    <h1>STUDY BATTLE</h1>
+                    <p class="subtitle">Dev × Arpita</p>
+                </div>
+                
+                <form id="login-form">
+                    <div class="input-group">
+                        <label>Select Your Name</label>
+                        <div class="name-selector">
+                            <input type="radio" id="name-dev" name="username" value="Dev" checked>
+                            <label for="name-dev" class="name-btn">Dev</label>
+                            
+                            <input type="radio" id="name-arpita" name="username" value="Arpita">
+                            <label for="name-arpita" class="name-btn">Arpita</label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    
+                    <div id="login-error" class="error-message hidden">
+                        Areee password galat hai 😭
+                    </div>
+                    
+                    <button type="submit" class="primary-btn pulse-hover">ENTER BATTLE 🚀</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- DASHBOARD SCREEN -->
+        <div id="dashboard-screen" class="screen hidden">
+            <!-- Header -->
+            <header class="dashboard-header glass-card">
+                <div class="header-content">
+                    <div>
+                        <h2 id="greeting">Good Morning, Dev 👋</h2>
+                        <p class="date-display" id="current-date">Thursday, 8 October 2026</p>
+                    </div>
+                    <div class="profile-area" id="profile-btn">
+                        <div class="avatar" id="user-avatar">D</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="dashboard-main">
+                
+                <!-- Hero / Battle Score -->
+                <section class="hero-section glass-card">
+                    <div class="hero-title">
+                        <h3>DEV × ARPITA</h3>
+                        <h1>STUDY BATTLE</h1>
+                        <p class="hero-quote">Two people. One goal. Zero excuses. 😤</p>
+                    </div>
+
+                    <div class="battle-score-container">
+                        <h2>⚔️ TODAY'S STUDY BATTLE</h2>
+                        
+                        <div class="score-cards">
+                            <div class="score-card player-dev">
+                                <h3 class="player-name">DEV</h3>
+                                <div class="player-time" id="dev-today-time">0h 0m</div>
+                            </div>
+                            
+                            <div class="vs-badge">VS</div>
+                            
+                            <div class="score-card player-arpita">
+                                <h3 class="player-name">ARPITA</h3>
+                                <div class="player-time" id="arpita-today-time">0h 0m</div>
+                            </div>
+                        </div>
+                        
+                        <div class="lead-indicator" id="hero-lead-indicator">
+                            <!-- Injected dynamically -->
+                            🤝 IT'S A DRAW!
+                        </div>
+                    </div>
+                </section>
+
+                <div class="motivational-quote" id="motivational-quote">
+                    "Bas ek aur session. Phir break. 😤"
+                </div>
+
+                <!-- Action Button -->
+                <button id="add-session-btn" class="massive-primary-btn pulse-hover">
+                    + ADD STUDY SESSION
+                </button>
+
+                <!-- Statistics -->
+                <section class="stats-section">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-info">
+                            <p>TOTAL STUDY</p>
+                            <h3 id="stat-total-time">0h 0m</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">🕒</div>
+                        <div class="stat-info">
+                            <p>SESSIONS</p>
+                            <h3 id="stat-sessions">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">📖</div>
+                        <div class="stat-info">
+                            <p>SUBJECTS</p>
+                            <h3 id="stat-subjects">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <p>CURRENT LEADER</p>
+                            <h3 id="stat-leader">-</h3>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="dashboard-grid">
+                    <!-- Left Column: Timeline -->
+                    <div class="grid-left">
+                        <section class="timeline-section glass-card">
+                            <div class="section-header">
+                                <h3>TODAY'S TIMELINE</h3>
+                                <div class="filter-group">
+                                    <label>SHOW:</label>
+                                    <select id="user-filter">
+                                        <option value="all">Everyone</option>
+                                        <option value="Dev">Dev</option>
+                                        <option value="Arpita">Arpita</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="timeline-container" class="timeline-container">
+                                <!-- Cards injected here -->
+                                <div class="empty-state">
+                                    <div class="empty-icon">📚</div>
+                                    <h4>No study sessions yet.</h4>
+                                    <p>Who's going to start the battle? 👀</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Study History Section -->
+                        <section class="history-section glass-card">
+                            <div class="section-header">
+                                <h3>📅 STUDY HISTORY</h3>
+                            </div>
+                            <div class="history-controls">
+                                <label for="history-date">Select Date:</label>
+                                <input type="date" id="history-date">
+                            </div>
+                            <div id="history-results" class="history-results hidden">
+                                <div class="history-scores">
+                                    <div class="history-score">
+                                        <span>Dev's Study</span>
+                                        <strong id="hist-dev-time">0h 0m</strong>
+                                    </div>
+                                    <div class="history-score">
+                                        <span>Arpita's Study</span>
+                                        <strong id="hist-arpita-time">0h 0m</strong>
+                                    </div>
+                                </div>
+                                <div id="history-timeline" class="timeline-container mini">
+                                    <!-- History sessions -->
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Right Column: Charts & Leaderboard & Chat -->
+                    <div class="grid-right">
+                        <!-- Chart -->
+                        <section class="chart-section glass-card">
+                            <h3>SUBJECT BREAKDOWN</h3>
+                            <div class="chart-container">
+                                <canvas id="subjectChart"></canvas>
+                            </div>
+                        </section>
+
+                        <!-- Leaderboard -->
+                        <section class="leaderboard-section glass-card">
+                            <h3>🏆 TODAY'S LEADERBOARD</h3>
+                            <div class="leaderboard-ranks" id="leaderboard-container">
+                                <!-- Injected via JS -->
+                            </div>
+                        </section>
+
+                        <!-- Messages -->
+                        <section class="chat-section glass-card">
+                            <h3>💬 BATTLE CHAT</h3>
+                            <div class="chat-history" id="chat-history">
+                                <!-- Chat bubbles here -->
+                            </div>
+                            
+                            <div class="send-message-area">
+                                <h4>Send a quick taunt:</h4>
+                                <div class="quick-messages" id="quick-messages">
+                                    <!-- Buttons -->
+                                </div>
+                                
+                                <form id="custom-msg-form" class="custom-msg-form">
+                                    <input type="text" id="custom-msg-input" placeholder="Write your own message..." required autocomplete="off">
+                                    <button type="submit">🚀</button>
+                                </form>
+                            </div>
+                        </section>
+
+                        <!-- Weekly Stats -->
+                        <section class="weekly-section glass-card">
+                            <h3>📊 THIS WEEK</h3>
+                            <div class="weekly-list" id="weekly-list">
+                                <!-- Days -->
+                            </div>
+                            <div class="weekly-summary">
+                                <div class="week-total">
+                                    <div><span>Dev:</span> <strong id="week-dev">0h 0m</strong></div>
+                                    <div><span>Arpita:</span> <strong id="week-arpita">0h 0m</strong></div>
+                                </div>
+                                <div class="week-winner" id="week-winner">
+                                    <!-- Weekly winner -->
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- MODALS -->
+        <!-- Add Session Modal -->
+        <div id="add-session-modal" class="modal-overlay hidden">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h2>+ ADD STUDY SESSION</h2>
+                    <button class="close-btn" id="close-session-modal">✕</button>
+                </div>
+                
+                <form id="add-session-form">
+                    <input type="hidden" id="edit-session-id">
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="start-time">Start Time</label>
+                            <input type="time" id="start-time" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="end-time">End Time</label>
+                            <input type="time" id="end-time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="calculated-duration" id="calculated-duration">
+                        Total Study Duration: <strong>--</strong>
+                    </div>
+
+                    <div class="divider">OR</div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Duration (Manual)</label>
+                            <div class="duration-inputs">
+                                <input type="number" id="manual-hours" placeholder="0" min="0" max="24"> hrs
+                                <input type="number" id="manual-mins" placeholder="0" min="0" max="59"> mins
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group mt-3">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" list="subject-list" placeholder="e.g. Polity" required autocomplete="off">
+                        <datalist id="subject-list">
+                            <option value="Polity">
+                            <option value="History">
+                            <option value="Geography">
+                            <option value="Maths">
+                            <option value="English">
+                            <option value="Reasoning">
+                            <option value="Current Affairs">
+                            <option value="Science">
+                        </datalist>
+                    </div>
+                    
+                    <div class="input-group mt-3">
+                        <label for="topic">Topic</label>
+                        <input type="text" id="topic" placeholder="e.g. Fundamental Rights" required autocomplete="off">
+                    </div>
+                    
+                    <button type="submit" class="primary-btn mt-4 pulse-hover">SAVE STUDY SESSION 🚀</button>
+                    
+                    <!-- Delete Button (Only visible in edit mode) -->
+                    <button type="button" id="delete-session-btn" class="danger-btn mt-2 hidden">Delete Session</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="modal-overlay hidden">
+            <div class="modal-content profile-modal-content glass-card">
+                <div class="modal-header">
+                    <h2>Profile</h2>
+                    <button class="close-btn" id="close-profile-modal">✕</button>
+                </div>
+                <div class="profile-details">
+                    <div class="big-avatar" id="profile-big-avatar">D</div>
+                    <h2 id="profile-name">Dev</h2>
+                    
+                    <div class="profile-stats">
+                        <div class="p-stat">
+                            <span>Today</span>
+                            <strong id="profile-today">0h 0m</strong>
+                        </div>
+                        <div class="p-stat">
+                            <span>This Week</span>
+                            <strong id="profile-week">0h 0m</strong>
+                        </div>
+                        <div class="p-stat">
+                            <span>Sessions</span>
+                            <strong id="profile-sessions">0</strong>
+                        </div>
+                    </div>
+                    
+                    <button id="logout-btn" class="danger-btn mt-4">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corner Status Widget -->
+        <div id="corner-widget" class="corner-widget hidden pulse-gentle">
+            <!-- content injected -->
+        </div>
+
+        <!-- Notifications -->
+        <div id="notification-container" class="notification-container"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
