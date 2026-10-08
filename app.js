@@ -199,12 +199,22 @@ async function fetchAllData() {
             const data = await res.json();
             
             studySessions = data.sessions || [];
-            // Google Sheets returns dates as ISO strings. Normalize to YYYY-MM-DD
+            // Google Sheets returns dates as ISO strings. Normalize to YYYY-MM-DD and HH:mm
             studySessions.forEach(s => {
                 if (s.date && s.date.includes('T')) {
                     const d = new Date(s.date);
                     s.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 }
+                
+                if (s.start_time && s.start_time.includes('T')) {
+                    const d = new Date(s.start_time);
+                    s.start_time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                }
+                if (s.end_time && s.end_time.includes('T')) {
+                    const d = new Date(s.end_time);
+                    s.end_time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                }
+                
                 s.duration_minutes = parseInt(s.duration_minutes, 10) || 0;
             });
             
